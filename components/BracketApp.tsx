@@ -5,6 +5,7 @@ import FamilyPicksBoard from "@/components/FamilyPicksBoard";
 import WorldCupGroups, { type WorldCupGroup } from "@/components/WorldCupGroups";
 import type { FamilyPicksEntry } from "@/lib/family-picks";
 import type { Match, MatchResult, Pick, PublicUser, ResultRefreshResponse, Stage } from "@/lib/types";
+import AnimatedToast from "@/components/AnimatedToast";
 
 type Props = {
   groups: WorldCupGroup[];
@@ -13,6 +14,13 @@ type Props = {
 
 type AuthMode = "login" | "register";
 type Filter = "all" | "mine" | "group" | "knockout" | "wrong";
+type ToastType = "success" | "error" | "info";
+
+type ToastState = {
+  message: string;
+  type: ToastType;
+  phase: "center" | "corner";
+};
 
 const FILTERS: { id: Filter; label: string; requiresAuth?: boolean }[] = [
   { id: "all", label: "All matches" },
@@ -181,8 +189,24 @@ export default function BracketApp({ groups, matches }: Props) {
   const [refreshing, setRefreshing] = useState("");
   const [familyEntries, setFamilyEntries] = useState<FamilyPicksEntry[]>([]);
   const [familyEntriesLoading, setFamilyEntriesLoading] = useState(false);
-  const [toast, setToast] = useState("");
+  const [toast, setToast] = useState<ToastState | null>(null);
   const [outcomeMatchId, setOutcomeMatchId] = useState<string | null>(null);
+
+  function showAnimatedToast(message: string, type: ToastType = "info") {
+    setToast({
+      message,
+      type,
+      phase: "center"
+    });
+
+    window.setTimeout(() => {
+      setToast((current) => (current ? { ...current, phase: "corner" } : current));
+    }, 900);
+
+    window.setTimeout(() => {
+      setToast(null);
+    }, 4200);
+  }
 
   useEffect(() => {
     fetch("/api/auth/me")
@@ -192,7 +216,7 @@ export default function BracketApp({ groups, matches }: Props) {
         setPicks(payload.picks ?? []);
         setResults(payload.results ?? []);
       })
-      .catch(() => setToast("Could not load your saved bracket."));
+      .catch(() => showAnimatedToast("Could not load your saved bracket.", "error"));
   }, []);
 
   const picksByMatch = useMemo(() => new Map(picks.map((pick) => [pick.matchId, pick])), [picks]);
@@ -249,7 +273,9 @@ export default function BracketApp({ groups, matches }: Props) {
         if (!response.ok) throw new Error(payload.error ?? "Could not load family picks.");
         setFamilyEntries(payload.entries ?? []);
       })
-      .catch((error) => setToast(error instanceof Error ? error.message : "Could not load family picks."))
+      .catch((error) =>
+        showAnimatedToast(error instanceof Error ? error.message : "Could not load family picks.", "error")
+      )
       .finally(() => setFamilyEntriesLoading(false));
   }, [filter, user]);
 
@@ -273,7 +299,7 @@ export default function BracketApp({ groups, matches }: Props) {
     setUser(payload.user);
     setPicks([]);
     setAuthError("");
-    setToast(authMode === "register" ? "Bracket created. Start making picks." : "Welcome back.");
+    showAnimatedToast(authMode === "register" ? "Bracket created. Start making picks." : "Welcome back.", "success");
 
     const session = await fetch("/api/auth/me").then((res) => res.json());
     setPicks(session.picks ?? []);
@@ -286,12 +312,12 @@ export default function BracketApp({ groups, matches }: Props) {
     setPicks([]);
     setFamilyEntries([]);
     if (filter === "wrong") setFilter("all");
-    setToast("Signed out.");
+    showAnimatedToast("Signed out.", "info");
   }
 
   function selectFilter(item: (typeof FILTERS)[number]) {
     if (item.requiresAuth && !user) {
-      setToast("Sign in first. Public humiliation has a login screen.");
+      showAnimatedToast("Sign in first. Public humiliation has a login screen.", "error");
       return;
     }
 
@@ -300,7 +326,7 @@ export default function BracketApp({ groups, matches }: Props) {
 
   async function savePick(match: Match, winner: string) {
     if (!user) {
-      setToast("Sign in first so your pick can be saved.");
+      showAnimatedToast("Sign in first...dumbass.", "error");
       return;
     }
 
@@ -314,7 +340,7 @@ export default function BracketApp({ groups, matches }: Props) {
     setSavingPick("");
 
     if (!response.ok) {
-      setToast(payload.error ?? "Could not save that pick.");
+      showAnimatedToast(payload.error ?? "Could not save that pick.", "error");
       return;
     }
 
@@ -322,12 +348,12 @@ export default function BracketApp({ groups, matches }: Props) {
       const rest = current.filter((pick) => pick.matchId !== match.id);
       return [...rest, payload.pick];
     });
-    setToast(`${winner} saved for ${match.homeTeam} vs ${match.awayTeam}.`);
+    showAnimatedToast(`${winner} saved for ${match.homeTeam} vs ${match.awayTeam}.`, "success");
   }
 
   async function refreshResult(match: Match) {
     if (!user) {
-      setToast("Sign in first to check saved results.");
+      showAnimatedToast("Sign in first to check saved results.", "error");
       return;
     }
 
@@ -341,7 +367,7 @@ export default function BracketApp({ groups, matches }: Props) {
     setRefreshing("");
 
     if (!response.ok) {
-      setToast(payload.error ?? "Could not refresh this result.");
+      showAnimatedToast(payload.error ?? "Could not refresh this result.", "error");
       return;
     }
 
@@ -349,7 +375,7 @@ export default function BracketApp({ groups, matches }: Props) {
       const rest = current.filter((result) => result.matchId !== payload.result.matchId);
       return [...rest, payload.result];
     });
-    setToast(payload.result.status === "final" ? "Final score updated." : "No final score yet.");
+    showAnimatedToast(payload.result.status === "final" ? "Final score updated." : "No final score yet.", "info");
   }
 
   const outcomeMatch = outcomeMatchId ? matches.find((match) => match.id === outcomeMatchId) : null;
@@ -558,9 +584,12 @@ export default function BracketApp({ groups, matches }: Props) {
       </section>
 
       {toast && (
-        <button className="toast" onClick={() => setToast("")}>
-          {toast}
-        </button>
+        <AnimatedToast
+          message={toast.message}
+          type={toast.type}
+          phase={toast.phase}
+          onClose={() => setToast(null)}
+        />
       )}
 
       {outcomeMatch && outcomePick && outcomeResult?.winner && (
