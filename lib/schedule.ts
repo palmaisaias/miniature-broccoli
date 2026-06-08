@@ -9,7 +9,7 @@ const MONTHS: Record<string, number> = {
 
 const STAGES: Stage[] = [
   "Round of 32",
-  "Round of 16.",
+  "Round of 16",
   "Quarterfinal",
   "Semifinal",
   "Third-place match",
