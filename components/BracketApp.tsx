@@ -588,7 +588,7 @@ export default function BracketApp({ groups, matches }: Props) {
           message={toast.message}
           type={toast.type}
           phase={toast.phase}
-          onClose={() => setToast(null)}
+          // onClose={() => setToast(null)}
         />
       )}
 
