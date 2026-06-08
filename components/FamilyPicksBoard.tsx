@@ -14,7 +14,37 @@ const COMMENTARY = [
   "A selection that really asks the bracket to do unpaid labor.",
   "Mathematically possible, emotionally suspicious.",
   "A pick so personal it may need its own apology.",
-  "Respectfully, this is why pencils have erasers."
+  "Respectfully, this is why pencils have erasers.",
+
+  "That pick smells like family trauma.",
+  "Several ancestors just looked away.",
+  "Your bracket is now under review.",
+  "That was a private thought.",
+  "A very loud way to be wrong.",
+  "Chosen with the calmness of someone losing money.",
+  "That pick should have stayed in the drafts.",
+  "A decision made far from the facts.",
+  "Interesting. In the legal sense.",
+  "That pick has probation energy.",
+  "Your confidence is doing a lot of unpaid work.",
+  "That selection arrived wearing fake credentials.",
+  "The numbers do not support your lifestyle.",
+  "A pick with no adult supervision.",
+  "The bracket heard you and got tired.",
+  "That one came directly from the gut. Unfortunately.",
+
+  "Esa elección necesita un adulto.",
+  "Valiente. También preocupante.",
+  "Eso fue personal, no estratégico.",
+  "El grupo familiar merece una explicación.",
+  "La calculadora se negó a participar.",
+  "Elegido con mucha fe y cero evidencia.",
+  "Eso huele a apuesta de compadre.",
+  "Una decisión hecha sin consultar la realidad.",
+  "Tu bracket acaba de pedir espacio.",
+  "Esa predicción tiene antecedentes.",
+  "El silencio de todos dice bastante.",
+  "Eso fue confianza, no conocimiento."
 ];
 
 function pickComment(displayName: string, matchId: string, winner: string) {
