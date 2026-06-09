@@ -400,11 +400,11 @@ export default function BracketApp({ groups, matches }: Props) {
             <span className="mark">
               <Trophy size={22} />
             </span>
-            <span>Palma Family World Cup Bracket</span>
+            <span>Surdasos ⚽️ y Putasos 👊🏼</span>
           </div>
-          <h1>Pick every matchup, no one is gonna get it anyway.</h1>
+          <h1>Todos escojan...ESCOJAN!</h1>
           <p>
-            Sign in once, make your picks, and come back through the tournament to check scores and outcomes.
+            Sign in once, make your picks...don't log in again.
           </p>
         </div>
       </section>
@@ -414,8 +414,8 @@ export default function BracketApp({ groups, matches }: Props) {
           <div className="panelHeader">
             <Shield size={20} />
             <div>
-              <span>Private bracket</span>
-              <strong>{user ? user.displayName : "Family login"}</strong>
+              <span>Las Braketas de Middle Earth</span>
+              <strong>{user ? user.displayName : "Log 🪵 in...ha"}</strong>
             </div>
           </div>
 
