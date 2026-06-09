@@ -431,7 +431,10 @@ input:focus {
 .familyPickPerson {
   border: 1px solid var(--line);
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.72);
+  background-image: url("/per_place.jpeg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   overflow: hidden;
 }
 
